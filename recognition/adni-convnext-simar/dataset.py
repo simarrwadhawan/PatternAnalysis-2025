@@ -7,19 +7,20 @@ import torch
 from torch.utils.data import Dataset, random_split
 from torchvision import transforms
 
-CLASS_TO_IDX = {"AD": 0, "CN": 1}
+CLASS_TO_IDX = {"AD": 0, "NC": 1}
 
 
 @dataclass
 class ADNIConfig:
-    data_root: str="/home/groups/comp3710/ADNI"
+    data_root: str = "/home/groups/comp3710/ADNI/AD_NC"
     img_size: int = 224
     mean: Tuple[float, float, float] = (0.485, 0.456, 0.406)
     std: Tuple[float, float, float] = (0.229, 0.224, 0.225)
+    train_ratio: float = 0.8
 
 
 class ADNIDataset(Dataset):
-    def __init__(self, data_root: str , split: str, img_size: int = 224):
+    def __init__(self, data_root: str, split: str, img_size: int = 224):
         self.data_root = data_root
         self.split = split
         self.samples = self.discover_samples()
@@ -27,17 +28,24 @@ class ADNIDataset(Dataset):
 
     def discover_samples(self) -> List[Tuple[str, int]]:
         samples: List[Tuple[str, int]] = []
-        for cls in ("AD", "CN"):
-            cls_dir = os.path.join(self.data_root, cls)
+        
+        if self.split in ("train", "val"):
+            split_dir = os.path.join(self.data_root, "train")
+        else:
+            split_dir = os.path.join(self.data_root, "test")
+        
+        for cls in ("AD", "NC"):
+            cls_dir = os.path.join(split_dir, cls)
             if not os.path.isdir(cls_dir):
                 continue
             for root, _, files in os.walk(cls_dir):
                 for f in files:
                     if f.lower().endswith((".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff")):
                         samples.append((os.path.join(root, f), CLASS_TO_IDX[cls]))
+        
         if not samples:
             raise FileNotFoundError(
-                f"No images found under {self.data_root}. Expected subfolders AD/ and CN/."
+                f"No images found under {split_dir}. Expected subfolders AD/ and NC/."
             )
         return samples
 
@@ -75,7 +83,6 @@ def make_splits(cfg: ADNIConfig, seed: int = 42):
     n_val = n_total - n_train
     gen = torch.Generator().manual_seed(seed)
     train_set, val_set = random_split(full, lengths=[n_train, n_val], generator=gen)
-    # mark transforms appropriately
     train_set.dataset.split = "train"
     val_set.dataset.split = "val"
     return train_set, val_set
