@@ -1,6 +1,7 @@
 import os
 from dataclasses import dataclass
 from typing import List, Tuple
+
 from PIL import Image
 import torch
 from torch.utils.data import Dataset, random_split
@@ -8,16 +9,17 @@ from torchvision import transforms
 
 CLASS_TO_IDX = {"AD": 0, "CN": 1}
 
+
 @dataclass
 class ADNIConfig:
-    data_root: str = "/home/groups/comp3710/ADNI"  # Rangpur default (override via CLI if needed)
+    data_root: str="/home/groups/comp3710/ADNI"
     img_size: int = 224
-    train_ratio: float = 0.8
     mean: Tuple[float, float, float] = (0.485, 0.456, 0.406)
     std: Tuple[float, float, float] = (0.229, 0.224, 0.225)
 
+
 class ADNIDataset(Dataset):
-    def __init__(self, data_root: str, split: str, img_size: int = 224):
+    def __init__(self, data_root: str , split: str, img_size: int = 224):
         self.data_root = data_root
         self.split = split
         self.samples = self.discover_samples()
@@ -34,7 +36,9 @@ class ADNIDataset(Dataset):
                     if f.lower().endswith((".png", ".jpg", ".jpeg", ".bmp", ".tif", ".tiff")):
                         samples.append((os.path.join(root, f), CLASS_TO_IDX[cls]))
         if not samples:
-            raise FileNotFoundError(f"No images found under {self.data_root}. Expected subfolders AD/ and CN/.")
+            raise FileNotFoundError(
+                f"No images found under {self.data_root}. Expected subfolders AD/ and CN/."
+            )
         return samples
 
     def _build_transforms(self, img_size: int):
@@ -63,6 +67,7 @@ class ADNIDataset(Dataset):
         y = torch.tensor(label, dtype=torch.long)
         return x, y, path
 
+
 def make_splits(cfg: ADNIConfig, seed: int = 42):
     full = ADNIDataset(cfg.data_root, split="train", img_size=cfg.img_size)
     n_total = len(full)
@@ -70,6 +75,7 @@ def make_splits(cfg: ADNIConfig, seed: int = 42):
     n_val = n_total - n_train
     gen = torch.Generator().manual_seed(seed)
     train_set, val_set = random_split(full, lengths=[n_train, n_val], generator=gen)
+    # mark transforms appropriately
     train_set.dataset.split = "train"
     val_set.dataset.split = "val"
     return train_set, val_set

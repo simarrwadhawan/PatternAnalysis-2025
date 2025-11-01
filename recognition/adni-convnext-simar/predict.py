@@ -1,11 +1,14 @@
 import argparse
 from pathlib import Path
+
 from PIL import Image
 import torch
 from torchvision import transforms
+
 from modules import build_model
 
 IDX_TO_CLASS = {0: "AD", 1: "CN"}
+
 
 def load_image(path: Path, img_size: int):
     tform = transforms.Compose([
@@ -16,6 +19,7 @@ def load_image(path: Path, img_size: int):
     with Image.open(path) as img:
         img = img.convert("RGB")
     return tform(img).unsqueeze(0)
+
 
 def main():
     ap = argparse.ArgumentParser()
@@ -38,6 +42,7 @@ def main():
             probs = torch.softmax(logits, dim=1).squeeze(0).cpu().tolist()
         pred_idx = int(torch.argmax(logits, dim=1).item())
         print(f"{img_path}: {IDX_TO_CLASS[pred_idx]} | probs={probs}")
+
 
 if __name__ == "__main__":
     main()
