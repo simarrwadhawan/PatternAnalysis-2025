@@ -63,6 +63,8 @@ def main():
     p.add_argument("--seed", type=int, default=42)
     args = p.parse_args()
 
+    print("Star")
+
     set_seed(args.seed)
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
