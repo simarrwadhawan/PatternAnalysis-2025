@@ -75,14 +75,3 @@ class ADNIDataset(Dataset):
         y = torch.tensor(label, dtype=torch.long)
         return x, y, path
 
-
-def make_splits(cfg: ADNIConfig, seed: int = 42):
-    full = ADNIDataset(cfg.data_root, split="train", img_size=cfg.img_size)
-    n_total = len(full)
-    n_train = int(n_total * cfg.train_ratio)
-    n_val = n_total - n_train
-    gen = torch.Generator().manual_seed(seed)
-    train_set, val_set = random_split(full, lengths=[n_train, n_val], generator=gen)
-    train_set.dataset.split = "train"
-    val_set.dataset.split = "val"
-    return train_set, val_set
