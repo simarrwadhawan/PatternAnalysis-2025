@@ -1,6 +1,6 @@
 # modules.py
 from __future__ import annotations
-from typing import Iterable, Optional
+from typing import Optional
 import torch
 import torch.nn as nn
 import timm
@@ -39,13 +39,20 @@ def build_model(
     pretrained: bool = True,
     drop_rate: float = 0.0,
 ) -> nn.Module:
-    return ConvNeXtClassifier(
+    """
+    Build a ConvNeXt model with all layers unfrozen for training.
+    """
+    model = ConvNeXtClassifier(
         model_name=model_name,
         num_classes=num_classes,
         pretrained=pretrained,
         drop_rate=drop_rate,
     )
-
+    
+    # Ensure all parameters are trainable
+    unfreeze_all(model)
+    
+    return model
 
 
 def freeze_backbone(model: nn.Module, except_head: bool = True) -> None:
@@ -53,38 +60,41 @@ def freeze_backbone(model: nn.Module, except_head: bool = True) -> None:
     Freeze parameters for finetuning. If except_head=True, keep classifier head trainable.
     Works with common timm naming (e.g., model.backbone.head).
     """
-    
+    # Freeze all parameters first
     for p in model.parameters():
         p.requires_grad = False
 
     if except_head:
-        
+        # Find and unfreeze the classifier head
         head = None
         if hasattr(model, "backbone") and hasattr(model.backbone, "get_classifier"):
-            
             head = model.backbone.get_classifier()
         elif hasattr(model, "backbone") and hasattr(model.backbone, "head"):
             head = model.backbone.head
 
         if head is None:
-           
+            # Fallback: find last linear/conv layer
             for m in model.modules():
                 if isinstance(m, (nn.Linear, nn.Conv2d)):
                     head = m  
             
             if head is None:
+                # If we still can't find it, unfreeze everything
                 for p in model.parameters():
                     p.requires_grad = True
                 return
 
+        # Unfreeze the head
         for p in head.parameters():
             p.requires_grad = True
 
 
 def unfreeze_all(model: nn.Module) -> None:
+    """Unfreeze all model parameters"""
     for p in model.parameters():
         p.requires_grad = True
 
 
 def num_trainable_params(model: nn.Module) -> int:
+    """Count the number of trainable parameters"""
     return sum(p.numel() for p in model.parameters() if p.requires_grad)
