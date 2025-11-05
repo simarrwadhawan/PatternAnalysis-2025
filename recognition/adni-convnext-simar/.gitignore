@@ -1,0 +1,25 @@
+# OS
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+
+# HPC / SLURM
+*.slurm
+slurm-*.out
+*.out
+*.err
+
+# Training artifacts
+runs/
+checkpoints/
+*.pt
+*.pth
+*.ckpt
+
+# Local notebooks / scratch
+*.ipynb_checkpoints
+
+# Eval byproducts
+recognition/adni-convnext-simar/images/metrics.json
