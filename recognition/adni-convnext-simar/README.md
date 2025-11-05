@@ -315,5 +315,27 @@ A single panel to include in reports: confusion matrix counts plus ROC curve. Us
     Link: "https://adni.loni.usc.edu/"
   - Name: ROC/AUC interpretation (medical)  
     Link: "https://pmc.ncbi.nlm.nih.gov/articles/PMC12260203/"
+  - ### AI Assistance & Authorship
+I used **ChatGPT (GPT-5 Thinking)** as a writing/coding assistant for this project.  
+**Scope of assistance:**
+- Helped draft and polish this README (structure, wording, and formatting).
+- Suggested code refactors and guardrails (e.g., dataloader fixes, evaluation logging, commit message style).
+- Generated shell/Git one-liners and SLURM templates, which I **reviewed and edited**.
+- Provided troubleshooting ideas (e.g., threshold sweep, TTA, majority-vote scan aggregation) which I **implemented and verified**.
+
+**Not done by AI:**
+- Dataset preparation, training runs, hyperparameter choices, model selection, and **all results** were executed by me.  
+- Figures (confusion matrix, ROC, metrics bar chart, samples) were generated directly from my evaluation scripts and saved under `recognition/adni-convnext-simar/images/`.
+
+**Verification & integrity:**
+- I reviewed every AI suggestion before use and tested all code paths that entered the repository.
+- No metrics or figures were fabricated or manually edited; they are reproducible from the provided scripts and logs.
+- External sources are cited in the **References** section.
+
+**Provenance (dates/tools):**
+- ChatGPT sessions: Oct–Nov 2025  
+- Model: GPT-5 Thinking (ChatGPT)  
+- Purpose: drafting + developer productivity; **final technical decisions are mine**.
+
 
 License: Apache-2.0 (same as course starter)
