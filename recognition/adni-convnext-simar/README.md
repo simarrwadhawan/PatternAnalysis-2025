@@ -203,17 +203,82 @@ ConvNeXt is a modern ConvNet that matches or beats transformer baselines (e.g., 
 
 # Figures:
   
-    - caption: "Confusion Matrix (slice-level)"
-      path: "images/confusion_matrix.png"
-      
-    - caption: "ROC Curve (slice-level)"
-      path: "images/roc_curve.png"
-    - caption: "Performance Metrics (slice-level)"
-      path: "images/performance_metrics.png"
-    - caption: "Sample Predictions"
-      path: "images/sample_predictions.png"
-    - caption: "Misclassified Samples"
-      path: "images/misclassified_samples.png"
+   ## Results — Visualizations (Slice-Level, Threshold = 0.55, TTA = orig+hflip)
+
+<p align="center">
+  <img src="images/confusion_matrix.png" alt="Confusion Matrix (Slice-Level)" width="64%">
+  <br/>
+  <sub><b>Figure 1.</b> Confusion Matrix — slice-level.</sub>
+</p>
+
+**What it shows (slice-level):**  
+Accuracy **78.18%** (7036/9000). True AD (TN)=**3045**, False AD→NC (FP)=**1415**; True NC (TP)=**3991**, False NC→AD (FN)=**549**. Model is slightly conservative for NC (higher NC recall), with most errors being AD→NC.
+
+---
+
+<p align="center">
+  <img src="images/roc_curve.png" alt="ROC Curve (Slice-Level)" width="64%">
+  <br/>
+  <sub><b>Figure 2.</b> ROC Curve — slice-level.</sub>
+</p>
+
+**What it shows:**  
+Overall discrimination between AD and NC. The curve sits well above the diagonal (random). AUC summarizes ranking performance; even when the threshold is fixed at 0.55 for reporting, the ROC shows performance across all thresholds.
+
+---
+
+<p align="center">
+  <img src="images/performance_metrics.png" alt="Performance Metrics (Slice-Level)" width="60%">
+  <br/>
+  <sub><b>Figure 3.</b> Metric Summary — slice-level.</sub>
+</p>
+
+**What it shows:**  
+Accuracy **0.7818**, Precision **0.7923**, Recall **0.7818**, F1 **0.7795**, Specificity **0.6827**. Balanced Precision/Recall, with Specificity lower than Sensitivity → the model favors catching NC over rejecting AD false alarms.
+
+---
+
+<p align="center">
+  <img src="images/sample_predictions.png" alt="Sample Predictions (Correct & Incorrect)" width="90%">
+  <br/>
+  <sub><b>Figure 4.</b> Sample Predictions — slice-level.</sub>
+</p>
+
+**What it shows:**  
+A random subset of predictions with model confidence. Green titles are correct; red would indicate errors. This provides qualitative insight into what the model considers “confidently” AD vs NC at the slice level.
+
+---
+
+<p align="center">
+  <img src="images/misclassified_samples.png" alt="Misclassified Samples (Slice-Level)" width="90%">
+  <br/>
+  <sub><b>Figure 5.</b> Misclassified Samples — slice-level.</sub>
+</p>
+
+**What it shows:**  
+Representative failures (always red titles). Typical mistakes include anatomically subtle slices (early AD or near-blank edge slices) where class cues are weak. These errors motivate aggregation or weighting by slice informativeness in future work.
+
+---
+
+<p align="center">
+  <img src="images/confusion_matrix_roc.png" alt="Combined Confusion Matrix + ROC (Slice-Level)" width="90%">
+  <br/>
+  <sub><b>Figure 6.</b> Combined CM + ROC — slice-level (for compact reporting).</sub>
+</p>
+
+**What it shows:**  
+A single panel to include in reports: confusion matrix counts plus ROC curve. Useful when space is limited but both error types and discrimination performance must be shown.
+
+---
+
+### Metrics (Slice-Level, for Repro)
+- **Accuracy:** 78.18%  
+- **Precision (weighted):** 0.7923  
+- **Recall (weighted):** 0.7818  
+- **F1 (weighted):** 0.7795  
+- **Specificity (AD as negative class):** 0.6827  
+- **Counts:** TN=3045, FP=1415, FN=549, TP=3991  
+- **Setup:** ConvNeXt Small @ 384px, label smoothing=0.1, **no mixup**, TTA (orig + hflip), threshold=0.55
 
 ---
 
