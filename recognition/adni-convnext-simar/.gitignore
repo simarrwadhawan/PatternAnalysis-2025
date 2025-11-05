@@ -23,3 +23,12 @@ checkpoints/
 
 # Eval byproducts
 recognition/adni-convnext-simar/images/metrics.json
+
+# HPC/SLURM
+*.slurm
+slurm-*.out
+*.out
+*.err
+
+# macOS
+.DS_Store
